@@ -1,0 +1,12 @@
+==================================
+         Kaggle's courses:
+Pandas
+Intro to Machine Learning
+==================================
+         Web Sources:
+https://realpython.com/python-api/
+https://realpython.com/python-web-scraping-practical-introduction/
+==================================
+           Books:
+Intro to Python for Computer Science and Data Science
+by Paul Deitel (Author), Harvey Deitel (Author)       ~500 pages in
