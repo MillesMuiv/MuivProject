@@ -5,6 +5,7 @@ DEVELOPER_KEY = 'AIzaSyBXi167dQKUwlOOvzLWnrHVxI7-M4LGCFc'
 YOUTUBE_API_SERVICE_NAME = 'youtube'
 YOUTUBE_API_VERSION = 'v3'
 youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=DEVELOPER_KEY)
+max_results = 25
 
 
 def youtube_search(options):
@@ -32,15 +33,13 @@ def youtube_search(options):
             playlists.append('%s (%s)' % (search_result['snippet']['title'],
                                           search_result['id']['playlistId']))
 
-    print('Videos:\n', '\n'.join(videos), '\n')
-    print('Channels:\n', '\n'.join(channels), '\n')
-    print('Playlists:\n', '\n'.join(playlists), '\n')
+    return videos, channels, playlists
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--max-results', help='Max results', default=max_results)
+args = parser.parse_args()
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--q', help='Search term', default=input())
-    parser.add_argument('--max-results', help='Max results', default=25)
-    args = parser.parse_args()
-
     youtube_search(args)
