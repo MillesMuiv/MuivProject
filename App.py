@@ -1,74 +1,115 @@
 import customtkinter
-
-customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+from Search import *
 
 
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        # window
         self.title("AppTitle")
         self.geometry(f"{1100}x{580}")
+        searchval = customtkinter.StringVar()
 
-        # grid layout (4x4)
+        # set grid layout 1x2
+        self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure((2, 3), weight=0)
-        self.grid_rowconfigure((0, 1, 2), weight=0)
 
-        # sidebar frame with widgets
-        self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(4, weight=0)
-        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="AyyyLmao", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.logo_label.grid(row=0, column=0, padx=20)
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=(0, 10))
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=(20, 0))
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
-        self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_4.grid(row=4, column=0, padx=20, pady=0)
-        self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_5.grid(row=5, column=0, padx=20, pady=10)
-        self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
-        self.appearance_mode_label.grid(row=6, column=0, padx=20, pady=(200, 0))
-        self.appearance_mode_optionmenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],
-                                                                       command=self.change_appearance_mode_event)
-        self.appearance_mode_optionmenu.grid(row=7, column=0, padx=20)
-        self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
-        self.scaling_label.grid(row=8, column=0, padx=20, pady=(10, 0))
-        self.scaling_optionmenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"],
-                                                               command=self.change_scaling_event)
-        self.scaling_optionmenu.grid(row=9, column=0, padx=20)
+        # create navigation frame
+        self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
+        self.navigation_frame.grid(row=0, column=0, sticky="nsew")
+        self.navigation_frame.grid_rowconfigure(4, weight=1)
 
-        # main entry and button
-        self.entry = customtkinter.CTkEntry(self, placeholder_text="Enter Channel or Video Name")
-        self.entry.grid(row=0, column=1, padx=(20, 0), pady=(20, 20), sticky="nsew")
+        self.navigation_frame_label = customtkinter.CTkLabel(self.navigation_frame, text="AyyLmao",
+                                                             compound="left", font=customtkinter.CTkFont(size=15, weight="bold"))
+        self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
 
-        self.main_button_1 = customtkinter.CTkButton(master=self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"))
-        self.main_button_1.grid(row=0, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.search_button_frame = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Search",
+                                                   fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
+                                                   anchor="w", command=self.search_button_frame_event)
+        self.search_button_frame.grid(row=1, column=0, sticky="ew")
 
-        # default values
-        self.sidebar_button_1.configure(text="Login")
-        self.sidebar_button_2.configure(text="Youtube")
-        self.sidebar_button_3.configure(text="Twitch")
-        self.sidebar_button_4.configure(text="Twitter")
-        self.sidebar_button_5.configure(state="disabled", text="Account Info")
-        self.appearance_mode_optionmenu.set("Dark")
-        self.scaling_optionmenu.set("100%")
+        self.frame_2_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Frame 2",
+                                                      fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
+                                                      anchor="w", command=self.frame_2_button_event)
+        self.frame_2_button.grid(row=2, column=0, sticky="ew")
 
-    def change_appearance_mode_event(self, new_appearance_mode: str):
+        self.frame_3_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Frame 3",
+                                                      fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
+                                                      anchor="w", command=self.frame_3_button_event)
+        self.frame_3_button.grid(row=3, column=0, sticky="ew")
+
+        self.appearance_mode_menu = customtkinter.CTkOptionMenu(self.navigation_frame, values=["Light", "Dark", "System"],
+                                                                command=self.change_appearance_mode_event)
+        self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky="s")
+
+        # create Search frame
+        self.search_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.search_frame.grid_columnconfigure(3, weight=1)
+
+        self.entry = customtkinter.CTkEntry(self.search_frame, textvariable=searchval, placeholder_text="Type Channel Name or Video Title", width=400)
+        self.entry.grid(row=0, column=1, columnspan=2, padx=(20, 0), pady=20, sticky="new")
+
+        self.search_button = customtkinter.CTkButton(self.search_frame, fg_color="transparent", border_width=2,
+                                                     text_color=("gray10", "#DCE4EE"), text='Search')
+        self.search_button.grid(row=0, column=3, padx=(10, 5), pady=20, sticky="ne")
+
+        self.scrollable_frame = customtkinter.CTkScrollableFrame(master=self.search_frame, label_text="Search Results", width=800)
+        self.scrollable_frame.grid(row=1, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        self.scrollable_frame.grid_columnconfigure(0, weight=1)
+
+        # create Youtube frame
+        self.second_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+
+        # create Twitch frame
+        self.third_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+
+        # select default frame
+        self.select_frame_by_name("search")
+
+    def select_frame_by_name(self, name):
+        # set button color for selected button
+        self.search_button.configure(fg_color=("gray75", "gray25") if name == "search" else "transparent")
+        self.frame_2_button.configure(fg_color=("gray75", "gray25") if name == "frame_2" else "transparent")
+        self.frame_3_button.configure(fg_color=("gray75", "gray25") if name == "frame_3" else "transparent")
+
+        # show selected frame
+        if name == "search":
+            self.search_frame.grid(row=0, column=1, sticky="nsew")
+        else:
+            self.search_frame.grid_forget()
+        if name == "frame_2":
+            self.second_frame.grid(row=0, column=1, sticky="nsew")
+        else:
+            self.second_frame.grid_forget()
+        if name == "frame_3":
+            self.third_frame.grid(row=0, column=1, sticky="nsew")
+        else:
+            self.third_frame.grid_forget()
+
+        # configurations
+
+        self.appearance_mode_menu.set("Dark")
+        self.search_button_frame.configure(text='Search')
+
+    def search_button_frame_event(self):
+        self.select_frame_by_name("search")
+
+    def frame_2_button_event(self):
+        self.select_frame_by_name("frame_2")
+
+    def frame_3_button_event(self):
+        self.select_frame_by_name("frame_3")
+
+    def change_appearance_mode_event(self, new_appearance_mode):
         customtkinter.set_appearance_mode(new_appearance_mode)
 
-    def change_scaling_event(self, new_scaling: str):
-        new_scaling_float = int(new_scaling.replace("%", "")) / 100
-        customtkinter.set_widget_scaling(new_scaling_float)
-
-    def sidebar_button_event(self):
-        print("sidebar_button click")
+    #def search_button_event(self):
+     #   parser.add_argument('--q', help='Search term', default=)
+     #   youtube_search(args)
+     #   for i in range(max_results):
+     #       button = customtkinter.CTkButton(master=self.scrollable_frame, text=f"{videos[i]}")
+      #      button.grid(row=i, column=0, padx=10, pady=(0, 20))
+      #      self.scrollable_frame_buttons.append(button)
 
 
 if __name__ == "__main__":
