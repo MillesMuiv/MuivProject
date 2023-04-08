@@ -46,16 +46,17 @@ class App(customtkinter.CTk):
         self.search_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.search_frame.grid_columnconfigure(3, weight=1)
 
-        self.entry = customtkinter.CTkEntry(self.search_frame, textvariable=searchval, placeholder_text="Type Channel Name or Video Title", width=400)
+        self.entry = customtkinter.CTkEntry(self.search_frame, placeholder_text="Type Channel Name or Video Title", width=400)
         self.entry.grid(row=0, column=1, columnspan=2, padx=(20, 0), pady=20, sticky="new")
-
-        self.search_button = customtkinter.CTkButton(self.search_frame, fg_color="transparent", border_width=2,
-                                                     text_color=("gray10", "#DCE4EE"), text='Search')
-        self.search_button.grid(row=0, column=3, padx=(10, 5), pady=20, sticky="ne")
 
         self.scrollable_frame = customtkinter.CTkScrollableFrame(master=self.search_frame, label_text="Search Results", width=800)
         self.scrollable_frame.grid(row=1, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
+        self.scrollable_frame_buttons = []
+
+        self.search_button = customtkinter.CTkButton(self.search_frame, fg_color="transparent", border_width=2,
+                                                     text_color=("gray10", "#DCE4EE"), text='Search', command=self.search_button_event)
+        self.search_button.grid(row=0, column=3, padx=(10, 5), pady=20, sticky="ne")
 
         # create Youtube frame
         self.second_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -65,6 +66,15 @@ class App(customtkinter.CTk):
 
         # select default frame
         self.select_frame_by_name("search")
+
+        # configurations
+        #def on_change():
+         #   global SearchEntry
+         #   SearchEntry = self.entry.get()
+         #   print(SearchEntry)
+
+        self.appearance_mode_menu.set("Dark")
+        self.search_button_frame.configure(text='Search')
 
     def select_frame_by_name(self, name):
         # set button color for selected button
@@ -86,11 +96,6 @@ class App(customtkinter.CTk):
         else:
             self.third_frame.grid_forget()
 
-        # configurations
-
-        self.appearance_mode_menu.set("Dark")
-        self.search_button_frame.configure(text='Search')
-
     def search_button_frame_event(self):
         self.select_frame_by_name("search")
 
@@ -103,13 +108,20 @@ class App(customtkinter.CTk):
     def change_appearance_mode_event(self, new_appearance_mode):
         customtkinter.set_appearance_mode(new_appearance_mode)
 
-    #def search_button_event(self):
-     #   parser.add_argument('--q', help='Search term', default=)
-     #   youtube_search(args)
-     #   for i in range(max_results):
-     #       button = customtkinter.CTkButton(master=self.scrollable_frame, text=f"{videos[i]}")
-      #      button.grid(row=i, column=0, padx=10, pady=(0, 20))
-      #      self.scrollable_frame_buttons.append(button)
+    def search_button_event(self):
+        if len(self.scrollable_frame_buttons) != 0:
+            self.scrollable_frame.grid_forget()
+            self.scrollable_frame = customtkinter.CTkScrollableFrame(master=self.search_frame, label_text="Search Results", width=800)
+            self.scrollable_frame.grid(row=1, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
+            self.scrollable_frame.grid_columnconfigure(0, weight=1)
+        searchEntry = self.entry.get()
+        search_result = youtube_search(args, searchEntry)
+        for i in range(len(search_result)):
+            button = customtkinter.CTkButton(master=self.scrollable_frame, text=f"{search_result[i]}",
+                                             fg_color=("gray70", "gray30"), text_color=("gray10", "gray90"),
+                                             hover_color=("gray50", "gray50"))
+            button.grid(row=i, column=0, padx=10, pady=(0, 20))
+            self.scrollable_frame_buttons.append(button)
 
 
 if __name__ == "__main__":
