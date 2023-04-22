@@ -1,6 +1,4 @@
 from googleapiclient.discovery import build
-import pandas as pd
-import seaborn as sns
 
 api_key = 'AIzaSyBXi167dQKUwlOOvzLWnrHVxI7-M4LGCFc'
 channel_ids = ['UCtu2BCnJoFGRBOuIh570QWw',
@@ -59,7 +57,8 @@ def get_video_ids(youtube, playlist_id):
     return video_ids
 
 
-def get_video_details(youtube, video_ids):
+def get_videos_details(youtube, video_ids):
+    all_video_details = []
     all_video_stats = []
 
     for i in range(0, len(video_ids), 50):
@@ -78,7 +77,41 @@ def get_video_details(youtube, video_ids):
 
             all_video_stats.append(video_stats)
 
-    return all_video_stats
+        for video in response['items']:
+            video_details = dict(Channel_Title=video['snippet']['channelTitle'],
+                                 Description=video['snippet']['description']
+                                 )
+
+            all_video_details.append(video_details)
+
+    return all_video_stats, all_video_details
+
+
+def get_video_details(youtube, video_id):
+    all_video_details = []
+    all_video_stats = []
+
+    request = youtube.videos().list(
+        part='snippet,statistics',
+        id=video_id)
+    response = request.execute()
+
+    for video in response['items']:
+        video_stats = dict(Title=video['snippet']['title'],
+                           Published_date=video['snippet']['publishedAt'],
+                           Views=video['statistics']['viewCount'],
+                           Likes=video['statistics']['likeCount'],
+                           Comments=video['statistics']['commentCount'],
+                           )
+        all_video_stats.append(video_stats)
+
+    for video in response['items']:
+        video_details = dict(Channel_Title=video['snippet']['channelTitle'],
+                             Description=video['snippet']['description']
+                             )
+        all_video_details.append(video_details)
+
+    return all_video_stats, all_video_details
 
 # TODO: turn these into functions that build graphs from a button press
 # channel_statistics = get_channel_stats(youtube, channel_ids)
