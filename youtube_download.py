@@ -1,6 +1,19 @@
 from pytube import Youtube
 
 
+def search_resolution(video_url):
+    try:
+        video = Youtube(video_url)
+        resolutions = []
+        for i in video.streams.filter(file_extension='mp4'):
+            resolutions.append(i.resolution)
+            # adding the resolutions to the combobox
+            #video_resolution['values'] = resolutions
+    except:
+        showerror(title='Error', message='An error occurred while searching for video resolutions!\n'\
+                 'Below might be the causes\n->Unstable internet connection\n->Invalid link')
+
+
 def download_video(video_url, resolution):
     try:
         #resolution = resolution.get
