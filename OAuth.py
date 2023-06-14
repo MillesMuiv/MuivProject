@@ -7,8 +7,12 @@ import sys
 
 CLIENT_SECRETS_FILE = "client_secrets.json"
 SCOPES = ["https://www.googleapis.com/auth/youtube"]
-API_SERVICE_NAME = "youtube"
-API_VERSION = "v2"
+OAUTH_API_SERVICE_NAME = "youtubeAnalytics"
+OAUTH_API_VERSION = "v2"
+LOGGED_IN = 0
+DEVELOPER_KEY = "AIzaSyBXi167dQKUwlOOvzLWnrHVxI7-M4LGCFc"
+YOUTUBE_API_SERVICE_NAME = 'youtube'
+YOUTUBE_API_VERSION = 'v3'
 
 
 def get_authenticated_service():
@@ -19,21 +23,12 @@ def get_authenticated_service():
 
     if credentials is None or credentials.invalid:
         credentials = run_flow(flow, storage)
-    return build(API_SERVICE_NAME, API_VERSION, credentials=credentials)
+    LOGGED_IN = 1
+    return build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, credentials=credentials), LOGGED_IN
 
 
-def execute_api_request(youtube):
-    request = youtube.reports().query(
-                          ids='channel==MINE',
-                          startDate='2017-01-01',
-                          endDate='2017-12-31',
-                          metrics='estimatedMinutesWatched,views,likes,subscribersGained',
-                          dimensions='day',
-                          sort='day')
-    response = request.execute()
-    return response
+
 
 
 if __name__ == "__main__":
-    youtube = get_authenticated_service()
-    print(execute_api_request(youtube))
+    youtube_oauth = get_authenticated_service()

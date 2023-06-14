@@ -3,7 +3,8 @@ from googleapiclient.discovery import build
 import urllib.request
 from PIL import Image
 
-thumbnails_file = r'C:\Users\slava\Desktop\DataProject\thumbnails\thumbnail'
+video_thumbnail = r'thumbnails\video_thumbnail'
+channel_thumbnail = r'thumbnails\channel_thumbnail'
 DEVELOPER_KEY = 'AIzaSyBXi167dQKUwlOOvzLWnrHVxI7-M4LGCFc'
 YOUTUBE_API_SERVICE_NAME = 'youtube'
 YOUTUBE_API_VERSION = 'v3'
@@ -11,18 +12,19 @@ youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=DEVE
 max_results = 25
 
 
-class WebImage:
-    def __init__(self, url):
-        self.image_url = f'https://i.ytimg.com/vi/{url}/hqdefault.jpg'
-        urllib.request.urlretrieve(self.image_url, thumbnails_file)
-        self.im = Image.open(thumbnails_file)
-        self.im.save(f'{thumbnails_file}.jpg')
-
-    def get(self):
-        return self.im
-
-    def close(self):
-        self.im.close()
+def thumbnail(url):
+    if url[:5] == 'https':
+        urllib.request.urlretrieve(url, channel_thumbnail)
+        chanim = Image.open(channel_thumbnail)
+        chanim.save(f'{channel_thumbnail}.jpg')
+        print(url)
+        return chanim
+    else:
+        image_url = f'https://i.ytimg.com/vi/{url}/hqdefault.jpg'
+        urllib.request.urlretrieve(image_url, video_thumbnail)
+        im = Image.open(video_thumbnail)
+        im.save(f'{video_thumbnail}.jpg')
+        return im
 
 
 def youtube_search(options, entry):

@@ -1,4 +1,5 @@
 from googleapiclient.discovery import build
+import requests
 
 api_key = 'AIzaSyBXi167dQKUwlOOvzLWnrHVxI7-M4LGCFc'
 channel_ids = ['UCtu2BCnJoFGRBOuIh570QWw',
@@ -9,7 +10,7 @@ channel_ids = ['UCtu2BCnJoFGRBOuIh570QWw',
 youtube = build('youtube', 'v3', developerKey=api_key)
 
 
-def get_channel_stats(youtube, channel_ids):
+def get_channels_stats(youtube, channel_ids):
     all_data = []
     request = youtube.channels().list(
         part='snippet,contentDetails,statistics',
@@ -101,17 +102,44 @@ def get_video_details(youtube, video_id):
                            Published_date=video['snippet']['publishedAt'],
                            Views=video['statistics']['viewCount'],
                            Likes=video['statistics']['likeCount'],
-                           Comments=video['statistics']['commentCount'],
+                           Comments=video['statistics']['commentCount']
                            )
         all_video_stats.append(video_stats)
 
     for video in response['items']:
         video_details = dict(Channel_Title=video['snippet']['channelTitle'],
-                             Description=video['snippet']['description']
+                             Description=video['snippet']['description'],
+                             Channel_Id=video['snippet']['channelId']
                              )
         all_video_details.append(video_details)
 
     return all_video_stats, all_video_details
+
+
+def get_dislikes(video_id):
+    request_url = f"https://returnyoutubedislikeapi.com/votes?videoId={video_id}"
+    request = requests.get(request_url)
+    return request.json()
+
+
+def get_channel_stats(youtube, channel_id):
+    all_data = []
+    request = youtube.channels().list(
+        part='snippet,contentDetails,statistics',
+        id=channel_id)
+    response = request.execute()
+
+    for channel in response['items']:
+        data = dict(Channel_name=channel['snippet']['title'],
+                    Subscribers=channel['statistics']['subscriberCount'],
+                    Views=channel['statistics']['viewCount'],
+                    Total_videos=channel['statistics']['videoCount'],
+                    playlist_id=channel['contentDetails']['relatedPlaylists']['uploads'],
+                    Thumbnail=channel['snippet']['thumbnails']
+                    )
+        all_data.append(data)
+
+    return all_data
 
 # TODO: turn these into functions that build graphs from a button press
 # channel_statistics = get_channel_stats(youtube, channel_ids)
